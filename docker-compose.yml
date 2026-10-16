@@ -1,0 +1,87 @@
+services:
+  # PostgreSQL Database Service
+  database:
+    image: postgres:16-alpine
+    container_name: labos-database
+    hostname: labos-database
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME:-postgres}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - labos-network
+
+  # NestJS API Backend (Port 8080)
+  backend:
+    container_name: labos-backend
+    build:
+      context: ./labOS-service
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    env_file:
+      - ./labOS-service/.env
+    depends_on:
+      - database
+    networks:
+      - labos-network
+    restart: on-failure
+
+  # Diagnostic Lab Workstation App (Port 3000)
+  app:
+    container_name: labos-app
+    build:
+      context: ./labOS-app
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./labOS-app/.env
+    depends_on:
+      - backend
+    networks:
+      - labos-network
+    restart: on-failure
+
+  # Super Admin Platform Governance (Port 3001)
+  admin:
+    container_name: labos-admin
+    build:
+      context: ./labOS-admin
+      dockerfile: Dockerfile
+    ports:
+      - '3001:3001'
+    env_file:
+      - ./labOS-admin/.env
+    depends_on:
+      - backend
+    networks:
+      - labos-network
+    restart: on-failure
+
+  # Public Marketing & Patient QR Portal (Port 3002)
+  web:
+    container_name: labos-web
+    build:
+      context: ./labOS-web
+      dockerfile: Dockerfile
+    ports:
+      - '3002:3002'
+    depends_on:
+      - app
+    networks:
+      - labos-network
+    restart: on-failure
+
+networks:
+  labos-network:
+    name: labos-network
+    driver: bridge
+
+volumes:
+  pg_data:

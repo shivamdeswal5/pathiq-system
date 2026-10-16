@@ -1,0 +1,76 @@
+openapi: 3.0.3
+info:
+  title: LabOS Master API Specification
+  description: |
+    Comprehensive REST API and WebSocket contracts for LabOS — the lab-operations platform for India's standalone diagnostic laboratories.
+    Organized as a Modular Monolith with DDD Bounded Contexts.
+  version: 1.0.0
+  contact:
+    name: LabOS Engineering
+    email: dev@labos.app
+servers:
+  - url: /api/v1
+    description: Current API Gateway (v1)
+  - url: http://localhost:3000/api/v1
+    description: Local Development Server
+
+tags:
+  - name: Labs
+    description: Tenancy, lab profiles, branding letterhead, and team members (`src/modules/labs`)
+  - name: Panels
+    description: Test catalog, sections, parameters with JSONB reference intervals, packages, and templates (`src/modules/panels`)
+  - name: Reports
+    description: Patients, accession orders, paper-like result entry, abnormal flags, medical amendments, vector PDF, and KPI stats (`src/modules/reports`)
+  - name: Referrals
+    description: Referring doctors, commission ledger & settlement records, outsourced reference lab testing (`src/modules/referrals`)
+  - name: Billing
+    description: Invoicing, payments, operational expense tracking, and financial analytics (`src/modules/billing`)
+  - name: Notifications
+    description: Multi-channel report dispatch (WhatsApp Cloud, Email, SMS) and delivery logs (`src/modules/notifications`)
+  - name: Collections
+    description: Phlebotomy home collection bookings, technician dispatch, and tube barcodes (`src/modules/collections`)
+  - name: Realtime
+    description: Socket.IO gateway, CloudEvents contracts, and REST fallback publishing (`src/modules/websockets`)
+  - name: Health
+    description: Liveness and readiness health checks (`@nestjs/terminus`)
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Service liveness and readiness probe
+      responses:
+        '200':
+          description: Service is healthy and database is connected
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'ok'
+                  info:
+                    type: object
+                  error:
+                    type: object
+                  details:
+                    type: object
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter the Supabase Auth JWT token issued on sign-in.
+
+# Bounded Context Module References:
+# - Labs:          ../labOS-service/src/modules/labs/labs.openapi.yaml
+# - Panels:        ../labOS-service/src/modules/panels/panels.openapi.yaml
+# - Reports:       ../labOS-service/src/modules/reports/reports.openapi.yaml
+# - Referrals:     ../labOS-service/src/modules/referrals/referrals.openapi.yaml
+# - Billing:       ../labOS-service/src/modules/billing/billing.openapi.yaml
+# - Notifications: ../labOS-service/src/modules/notifications/notifications.openapi.yaml
+# - Collections:   ../labOS-service/src/modules/collections/collections.openapi.yaml
+# - WebSockets:    ../labOS-service/src/modules/websockets/websockets.openapi.yaml

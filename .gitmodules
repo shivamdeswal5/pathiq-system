@@ -1,0 +1,12 @@
+[submodule "labOS-service"]
+	path = labOS-service
+	url = https://github.com/shivamdeswal5/labOS-service.git
+[submodule "labOS-app"]
+	path = labOS-app
+	url = https://github.com/shivamdeswal5/labOS-app.git
+[submodule "labOS-web"]
+	path = labOS-web
+	url = https://github.com/shivamdeswal5/pathiq.git
+[submodule "labOS-admin"]
+	path = labOS-admin
+	url = https://github.com/shivamdeswal5/pathiq-admin.git
